@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Violations & Punishments</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+        }
+        .container {
+            min-height: 100vh;
+            background: linear-gradient(to bottom right, #7e22ce, #2563eb, #06b6d4);
+            padding: 2rem 1rem;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .pattern-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.1;
+        }
+        .content {
+            width: 100%;
+            max-width: 64rem;
+            margin: 2rem 0;
+        }
+        .card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 0.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            width: 100%;
+            max-width: 1200px;
+            backdrop-filter: blur(4px);
+        }
+        .card-header {
+            background-color: #2563eb;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        .card-title {
+            font-size: 1.875rem;
+            font-weight: bold;
+            margin: 0;
+        }
+        .card-content {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            max-width: 1200px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 0.75rem 1.5rem;
+            text-align: left;
+            width: 25%;
+        }
+        thead {
+            background-color: #f3f4f6;
+        }
+        tbody tr:nth-child(even) {
+            background-color: rgba(243, 244, 246, 0.6);
+        }
+        tbody tr:nth-child(odd) {
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+        #roleplayViolationsTable {
+        overflow-x: auto;
+        }
+        .footer {
+            text-align: center;
+            color: white;
+            font-size: 0.875rem;
+            padding: 1rem;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        /* New styles for word wrapping */
+        .rule-cell {
+            max-width: 200px;
+            word-wrap: break-word;
+        }
+        /* New styles for line break */
+        .rule-cell-break {
+            white-space: pre-line;
+        }
+   </style>
+</head>
+<body>
+    <div class="container">
+        <div class="pattern-overlay"></div>
+        <div class="content">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="card-title">Violations & Punishments</h1>
+                </div>
+                <div class="card-content">
+                    <table aria-label="Violations and Punishments">
+                        <thead>
+                            <tr>
+                                <th scope="col">Rule Violation</th>
+                                <th scope="col">Punishment For Verified</th>
+                                <th scope="col">Punishment For Non Verified</th>
+                            </tr>
+                        </thead>
+                        <tbody id="violationsTable">
+                            <!-- Table rows will be inserted here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="card-title">Chat Violations</h1>
+                </div>
+                <div class="card-content">
+                    <table aria-label="Chat Violations">
+                        <thead>
+                            <tr>
+                                <th scope="col">Chat Violation</th>
+                                <th scope="col">Punishment For Verified</th>
+                                <th scope="col">Punishment For Non Verified</th>
+                            </tr>
+                        </thead>
+                        <tbody id="chatViolationsTable">
+                            <!-- Table rows will be inserted here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="card-title">Rules of Role-Play</h1>
+                </div>
+                <div class="card-content">
+                    <table aria-label="Rules of Role-Play">
+                        <thead>
+                            <tr>
+                                <th scope="col">Rules of Role-Play</th>
+                                <th scope="col">Punishment For Verified</th>
+                                <th scope="col">Punishment For Non Verified</th>
+                            </tr>
+                        </thead>
+                        <tbody id="roleplayViolationsTable">
+                            <!-- Table rows will be inserted here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <p>New Rules are being added and updated by Admin Instructor and reviewed by Chief Deputy Administrator before publishing</p>
+            <p id="lastUpdated">Last updated: </p>
+        </div>
+    </div>
+
+    <script>
+        const violations = [
+            { rule: "Light Cheats", punishmentVerified: "1 Day Ban", punishmentNonVerified: "Warn / 15 Day Ban", ruleDescription: "third-party cleo, scripts, visual cheats and other types of cheats that give advantage over the players ( ex.: GM, Aimbot, Autorepair, WallHack, SpeedHack, auto +c, etc ... )"},
+            { rule: "Medium Cheats", punishmentVerified: "1 Day Ban", punishmentNonVerified: "30 Day Ban", ruleDescription: "Cheats that ruin the experience of other players ( ex.: Airbrake,Rapid fire, Teleport, Collision, Weapon Config, SZ-Bypass, etc ... )  " },
+            { rule: "Rage Cheats", punishmentVerified: "IP BAN | No Right to Appeal", punishmentNonVerified: "IP BAN | No Right to Appeal",ruleDescription: "Cheats that destroy the server and other players' game ( ex.: MultiCheat, Rvanka, Carshoot, SilentAim, Crasher, DGun, Coordmaster,invismenu ... ) " },
+            { rule: "Evade Punishment ", punishmentVerified: "BAN IP", punishmentNonVerified: "BAN IP", ruleDescription: "Escaping the punishment by creating new accounts " },
+            { rule: "Using Bots", punishmentVerified: "1 Day Ban", punishmentNonVerified: "30 Day Ban", ruleDescription: "Using RakNet or similar tools to join bots in server" },
+            { rule: "Using GameMode Bugs", punishmentVerified: "1 Day Ban", punishmentNonVerified: "Warn / Ban 15 Days" },
+            { rule: "Game Money Fraud ", punishmentVerified: "BAN IP", punishmentNonVerified: "BAN IP" },
+            { rule: "Multi Account", punishmentVerified: "BAN 1 Day", punishmentNonVerified: "Ban 15 Days", ruleDescription: "Usage of Twinks" },
+            { rule: "Frauds/cheating with multiaccounts", punishmentVerified: "1 Day Ban on Each Account", punishmentNonVerified: "30 Day Ban on Each Account" },
+            { rule: "Cleo animation", punishmentVerified: "1 Day Ban", punishmentNonVerified: "7 Day Ban" },
+            { rule: " NonRP scam", punishmentVerified: "Permanent IP Ban", punishmentNonVerified: "Permanent IP Ban" },
+            { rule: "Lost / hacked account", punishmentVerified: "Not defined", punishmentNonVerified: "30 Day Ban" },
+            { rule: "Extort property or money from players", punishmentVerified: "1 Day Ban", punishmentNonVerified: "30 Day Ban" },
+            { rule: "Frame/deliberately leak players/admins", punishmentVerified: "1 Day Ban", punishmentNonVerified: "30 Day Ban" },
+	    { rule: "Donate to another player in order to receive something through it", punishmentVerified: "1 Day BAN", punishmentNonVerified: "30 Day BAN" },
+	    { rule: "Complicity with the blacklisted player expressed in any form", punishmentVerified: "1 Day Ban", punishmentNonVerified: "10 Day Ban" },
+	    { rule: "Blackmailing anyone, by anything", punishmentVerified: "1 Day Ban", punishmentNonVerified: "30 Day Ban" },
+	    { rule: "Impersonating an administrator", punishmentVerified: "1 Day BAN", punishmentNonVerified: "30 Day BAN" },
+	    { rule: "Using of Nazi symbols/expressions", punishmentVerified: "Verbal warn / 1 Day Ban", punishmentNonVerified: "Ban 10 Days" },
+	    { rule: "Use of Fake Hacks", punishmentVerified: "PERMANENT IP BAN", punishmentNonVerified: "PERMANENT IP BAN", ruleDescription: "The use of fake hacks or fabricated hack claims to falsely report other players | Project Blacklist" },
+            
+        // End of Violations Part
+        ];
+
+        const violationsTable = document.getElementById('violationsTable');
+    violations.forEach((violation, index) => {
+        const row = violationsTable.insertRow();
+        const ruleCell = row.insertCell(0);
+        const punishmentVerifiedCell = row.insertCell(1);
+        const punishmentNonVerifiedCell = row.insertCell(2);
+        
+        // Apply different classes based on the option
+        if (index === violations.length - 2) {
+            ruleCell.className = 'rule-cell'; // Word wrap
+        } else if (index === violations.length - 1) {
+            ruleCell.className = 'rule-cell-break'; // Line break
+        }
+        
+        ruleCell.textContent = violation.rule;
+        ruleCell.title = violation.ruleDescription; // Add the title attribute here
+
+        punishmentVerifiedCell.textContent = violation.punishmentVerified;
+        punishmentNonVerifiedCell.textContent = violation.punishmentNonVerified;
+    });
+
+const chatViolations = [
+  { rule: "Mention Relatives", punishmentVerified: "Mute 60+ minutes / 1 Day Ban", punishmentNonVerified: "Mute 60 minutes", ruleDescription: "Any form of mentioning relatives (mq, rnq, etc.)" },
+  { rule: "Insulting Administration", punishmentVerified: "Mute 120 minutes / 1 Day ", punishmentNonVerified: "Mute 60 minutes", ruleDescription: "Any insult directed towards the administration" },
+  { rule: "Insulting the Nation / Politics Discussion", punishmentVerified: "Mute 120 minutes / 1 Day Ban", punishmentNonVerified: "Mute 120 minutes", ruleDescription: "Insulting the nation or engaging in political discussions" },
+  { rule: "Insulting the Server", punishmentVerified: "Ban 7 days / 1 Day Ban", punishmentNonVerified: "Ban 7 days", ruleDescription: "Insulting the server directly" },
+  { rule: "Insulting the Server in Global Chat", punishmentVerified: "Ban-IP", punishmentNonVerified: "Ban-IP", ruleDescription: "Insulting the server in any global chat (/gov, /Ad, /V, /d, /f, etc.)" },
+  { rule: "Insulting/Swearing in OOC Chat", punishmentVerified: "Mute 40+ minutes ", punishmentNonVerified: "Mute 40 minutes", ruleDescription: "Using insults or swear words in Out of Character chat" },
+  { rule: "Veiled Insults/Swearing", punishmentVerified: "Mute 20+ minutes ", punishmentNonVerified: "Mute 20 minutes", ruleDescription: "Indirect insults or swearing" },
+  { rule: "Off-topic in /report", punishmentVerified: "RMUTE 20+ minutes", punishmentNonVerified: "RMUTE 20 minutes", ruleDescription: "Posting off-topic messages in /report" },
+  { rule: "Insulting Administrators in /report", punishmentVerified: "1 Day Ban", punishmentNonVerified: "Warn", ruleDescription: "Insulting admins through /report" },
+  { rule: "False Report in /report", punishmentVerified: "RMUTE 30+ minutes", punishmentNonVerified: "RMUTE 30 minutes", ruleDescription: "Filing a false report in /report" },
+  { rule: "Metagaming (MG)", punishmentVerified: "Mute 30+ minutes", punishmentNonVerified: "Mute 30 minutes", ruleDescription: "Using out-of-character (OOC) information for in-character (IC) actions" },
+  { rule: "Caps Abuse (All Uppercase Letters)", punishmentVerified: "Mute 20 minutes", punishmentNonVerified: "Mute 20 minutes", ruleDescription: "Using all uppercase letters excessively in chat" },
+  { rule: "Deceiving the Administration", punishmentVerified: "Mute 60 minutes / Ban 1 days", punishmentNonVerified: "Mute 60 minutes / Ban 15 Days", ruleDescription: "Providing false or misleading information to the administration" },
+  { rule: "Flood (Repeated Messages)", punishmentVerified: "Mute 20 minutes", punishmentNonVerified: "Mute 20 minutes", ruleDescription: "Sending more than 3 identical messages in a row" },
+  { rule: "Organized Flood", punishmentVerified: "Mute 20 minutes", punishmentNonVerified: "Mute 20 minutes", ruleDescription: "Multiple people sending similar messages at the same time" },
+  { rule: "Flood Provocation", punishmentVerified: "Mute 20 minutes", punishmentNonVerified: "Mute 20 minutes", ruleDescription: "Encouraging others to flood the chat" },
+  { rule: "Third-Party Advertising", punishmentVerified: "1 Day Ban", punishmentNonVerified: "30 Day Ban / Ban-IP", ruleDescription: "Advertising third-party services or websites" },
+  { rule: "Symbol Abuse", punishmentVerified: "Mute 20 minutes", punishmentNonVerified: "Mute 20 minutes", ruleDescription: "Abuse or overuse of symbols in chat" },
+  { rule: "Inappropriate Behavior", punishmentVerified: "Mute 40+ minutes / 1 Day Ban", punishmentNonVerified: "Mute 40 minutes", ruleDescription: "Engaging in behavior deemed inappropriate" },
+  { rule: "Provoking Conflict", punishmentVerified: "Mute 30+ minutes", punishmentNonVerified: "Mute 30 minutes", ruleDescription: "Provoking the administration or other players to engage in conflict" },
+  { rule: "Requesting Spawn/Transport in Chat", punishmentVerified: "RMUTE 20 minutes", punishmentNonVerified: "RMUTE 20 minutes", ruleDescription: "Requesting spawn or transportation in chat" },
+  { rule: "Inciting Ethnic Hatred", punishmentVerified: "Ban 1 days", punishmentNonVerified: "Ban 15 Days", ruleDescription: "Inciting hate based on ethnicity" },
+  { rule: "NonRP News in /gov or LIVE", punishmentVerified: "Verbal warn trough PM / Mute 40+ minutes", punishmentNonVerified: "Mute 40 minutes", ruleDescription: "Posting non-roleplay (NonRP) news in /gov or LIVE chats" },
+  { rule: "Impersonating an Administrator", punishmentVerified: "1 Day Ban", punishmentNonVerified: "Mute 120 minutes", ruleDescription: "Pretending to be an admin in chat" },
+  { rule: "Disinformation", punishmentVerified: "Mute 30 minutes", punishmentNonVerified: "Mute 30 minutes", ruleDescription: "Spreading false information, such as /q in VIP chat" },
+  { rule: "Advertising/Recruiting in VIP Chat", punishmentVerified: "Mute 40 minutes / Mute 300 minutes", punishmentNonVerified: "Mute 40 minutes / Mute 300 minutes", ruleDescription: "Advertising or recruiting in VIP chat" }
+];
+
+
+const chatViolationsTable = document.getElementById('chatViolationsTable');
+chatViolations.forEach((violation, index) => {
+  const row = chatViolationsTable.insertRow();
+  const ruleCell = row.insertCell(0);
+  const punishmentVerifiedCell = row.insertCell(1);
+  const punishmentNonVerifiedCell = row.insertCell(2);
+
+  // Apply different classes based on the option
+  if (index === chatViolations.length - 2) {
+    ruleCell.className = 'rule-cell'; // Word wrap
+  } else if (index === chatViolations.length - 1) {
+    ruleCell.className = 'rule-cell-break'; // Line break
+  }
+
+  ruleCell.textContent = violation.rule;
+  ruleCell.title = violation.ruleDescription; // Add the title attribute here
+
+  punishmentVerifiedCell.textContent = violation.punishmentVerified;
+  punishmentNonVerifiedCell.textContent = violation.punishmentNonVerified;
+});
+
+const rpViolations = [
+
+    { rule: "DM (Killing without an IC reason)", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "WARN", ruleDescription: "Killing without an IC reason" },
+  { rule: "DM in the SZ (Safe Zone)", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "JAIL 30+ minutes / WARN", ruleDescription: "Killing in the Safe Zone" },
+  { rule: "Mass DM (damaging 3 or more players)", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "BAN 5 days", ruleDescription: "Damaging multiple players" },
+  { rule: "Mass DM in the SZ (damaging 3 or more players)", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "JAIL 30+ minutes / BAN 7 days", ruleDescription: "Damaging multiple players in the Safe Zone" },
+  { rule: "Mass DM (including DB, TK) more than 2 times", punishmentVerified: "REMOVE VERIFICATION", punishmentNonVerified: "BAN-IP", ruleDescription: "Committing mass DM multiple times" },
+  { rule: "DB (NonRP DriveBy)", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "JAIL 20+ minutes", ruleDescription: "Committing a non-RP drive-by" },
+  { rule: "Mass DB (damaging 3 or more players)", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "WARN", ruleDescription: "Damaging multiple players with a drive-by" },
+  { rule: "DB by malicious transport (Rhino, Hunter etc)", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "WARN", ruleDescription: "Using malicious transport for a drive-by" },
+  { rule: "RK (Revenge Kill - killing a player for the purpose of revenge)", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "JAIL 20+ minutes", ruleDescription: "Killing a player for revenge" },
+  { rule: "PG (PowerGaming - assigning properties to a character that does not correspond to reality)", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "JAIL 20+ minutes", ruleDescription: "Powergaming" },
+  { rule: "VDM (killing without IC reason on any kind of transport)", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "WARN", ruleDescription: "Killing without an IC reason on transport" },
+  { rule: "SK (Spawn Kill - killing at the place where the player appears)", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "WARN", ruleDescription: "Killing a player at spawn" },
+  { rule: "TK (Team Kill - killing a member of your faction, teammate)", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "WARN", ruleDescription: "Killing a teammate" },
+  { rule: "LTA ", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "JAIL 40+ minutes", ruleDescription: "(Exit the game / escape from arrest / death in water / interior / spawn / escape to the SZ from death)" },
+  { rule: "Leaving an RP-process in any way", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "WARN", ruleDescription: "Leaving an RP process" },
+  { rule: "Escape from punishment", punishmentVerified: "REMOVE VERIFICATION", punishmentNonVerified: "BAN 10+ days", ruleDescription: "Escaping from punishment" },
+  { rule: "Exit from the game with the purpose of escaping from punishment", punishmentVerified: "REMOVE VERIFICATION", punishmentNonVerified: "X2 punishment / BAN 10+ days", ruleDescription: "Exiting the game to escape punishment" },
+  { rule: "NonRP (ruining an RP-experience)", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "WARN", ruleDescription: "Ruining an RP experience" },
+  { rule: "NonRP nickname in the faction on high rank", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "Verbal warning (through PM) / WARN", ruleDescription: "Having a non-RP nickname in a high-ranking faction" },
+  { rule: "Inappropriate nickname", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "WARN", ruleDescription: "Having an inappropriate nickname" },
+  { rule: "NonRP parking", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "Verbal Warn (Through PM) / SPVEH / JAIL 10 minutes", ruleDescription: "Parking in a non-RP manner" },
+  { rule: "NonRP cop", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "JAIL 30+ minutes / FKICK", ruleDescription: "Roleplaying as a non-RP cop" },
+  { rule: "Overusage of taser in gunplay", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "JAIL 60 minutes", ruleDescription: "Overusing the taser in gunplay" },
+  { rule: "NonRP reporter/sender", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "MUTE 150 minutes", ruleDescription: "(posting/sending of empty-advertisements or, containing offensive content like insults, or NonRP advertisements in general)" },
+  { rule: "Ignorance of Fear-RP", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "WARN", ruleDescription: "(operating your character with a taste of real life. It is the concept of roleplaying your character's safety of life, showing fear when dealing with impossible odds)" },
+  { rule: "NonRP flying", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "JAIL 20+ minutes / WARN", ruleDescription: "Flying in a non-RP manner" },
+  { rule: "NonRP /rob", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "WARN", ruleDescription: "Using /rob in a non-RP manner" },
+  { rule: "NonRP /rape /blowjob (Using the Commands without a proper roleplay of /me & /do)", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "WARN", ruleDescription: "Using /rape or /blowjob without proper RP" },
+  { rule: "Fast C-BUG", punishmentVerified: "REMOVE VERIFICATION", punishmentNonVerified: "WARN", ruleDescription: "Exploiting the fast C-BUG" },
+  { rule: "Interfering with the work of the administration", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "JAIL 10+ minutes / WARN / BAN 2 days", ruleDescription: "Interfering with the administration's work" },
+  { rule: "Cancellation of the animation in battle", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "JAIL 40+ minutes", ruleDescription: "Canceling animations in battle" },
+  { rule: "Cancellation of the rate of fire", punishmentVerified: "REMOVE VERIFICATION", punishmentNonVerified: "JAIL 20+ minutes", ruleDescription: "Canceling the rate of fire" },
+  { rule: "Transfer items / money received from twinks to the main account", punishmentVerified: "REMOVE VERIFICATION", punishmentNonVerified: "BAN 30 days", ruleDescription: "Transferring items or money from twinks to the main account" },
+  { rule: "PD (PayDay) earning ", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "KICK / WARN", ruleDescription: "(AFK with / without ESC in any faction with the purpose of getting salary)" },
+  { rule: "Streamsniping ", punishmentVerified: "REMOVE VERIFICATION", punishmentNonVerified: "JAIL 30 minutes / WARN", ruleDescription: "(use of game information that was received on the stream of another player)" },
+  { rule: "The Hitman faction is not allowed to kidnap forcefully (by pointing weapons / raiding)", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "WARN", ruleDescription: "The Hitman faction kidnapping forcefully" },
+  { rule: "The Hitman faction can't partake in kidnapping missions with Al-Qaeda / Biker factions", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "WARN", ruleDescription: "The Hitman faction participating in kidnapping missions with certain factions" },
+  { rule: "Non-RP firefighter", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "JAIL 120 minutes", ruleDescription: "(Extinguishing a fire without firefighter's clothing / extinguishing a non-existent fire through a bug or exploit)" },
+  { rule: "Switching gangs during the turf war to give free kills to the opposite gang", punishmentVerified: "REMOVE VERIFICATION", punishmentNonVerified: "WARN", ruleDescription: "Switching gangs during a turf war" },
+  { rule: "NonRP kidnap (kidnap without proper RolePlay)", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "WARN", ruleDescription: "Kidnapping without proper RP" },
+  { rule: "Violation of Fear RP during the kidnap", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "WARN", ruleDescription: "Violating fear-RP during a kidnapping" },
+  { rule: "Kidnapping, during the quest e.g SHIP Treasury is not allowed", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "WARN", ruleDescription: "Kidnapping during a quest" },
+  { rule: "Kidnapping of AFK players", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "WARN", ruleDescription: "Kidnapping AFK players" },
+  { rule: "Using /tazer while ship quest", punishmentVerified: "Verbal Warn / REMOVE VERIFICATION", punishmentNonVerified: "WARN", ruleDescription: "Using /tazer during a ship quest" },
+];
+
+const roleplayViolationsTable = document.getElementById('roleplayViolationsTable');
+rpViolations.forEach((violation, index) => {
+  const row = roleplayViolationsTable.insertRow();
+  const ruleCell = row.insertCell(0);
+  const punishmentVerifiedCell = row.insertCell(1);
+  const punishmentNonVerifiedCell = row.insertCell(2);
+
+  // Apply different classes based on the option
+  if (index === rpViolations.length - 2) {
+    ruleCell.className = 'rule-cell'; // Word wrap
+  } else if (index === rpViolations.length - 1) {
+    ruleCell.className = 'rule-cell-break'; // Line break
+  }
+
+  ruleCell.textContent = violation.rule;
+  ruleCell.title = violation.ruleDescription; // Add the title attribute here
+
+  punishmentVerifiedCell.textContent = violation.punishmentVerified;
+  punishmentNonVerifiedCell.textContent = violation.punishmentNonVerified;
+});
+
+    const lastUpdated = document.getElementById('lastUpdated');
+    lastUpdated.textContent += new Date().toLocaleDateString();
+ </script>    
+
+</body>
+</html>
